@@ -15,6 +15,10 @@
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
     <description><![CDATA[
     This plugin implements inlay parameter hints for pytest.mark.parametrize.
+    <ol>
+    <li>pytest parametrize order hints<br/>Show parameter-set order number in argvalues list.
+    <li>pytest parametrize name hints<br/>Show parameter name of parameter-set in argvalues, name is defined by argnames.
+    </ol>
     ]]></description>
 
     <!-- Product and plugin compatibility requirements.
