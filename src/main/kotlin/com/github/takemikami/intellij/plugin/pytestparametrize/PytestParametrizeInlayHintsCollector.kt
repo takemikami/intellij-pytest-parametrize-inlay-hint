@@ -24,9 +24,13 @@ class PytestParametrizeInlayHintsCollector(
                 && element.arguments.size >= 2) {
             val names = element.arguments[0]
             val valList = element.arguments[1]
-            if (names !is PyStringLiteralExpression || valList !is PyListLiteralExpression) { return true }
+            if (valList !is PyListLiteralExpression
+                    || (names !is PyStringLiteralExpression && names !is PyListLiteralExpression)) { return true }
 
-            val nameKeys = names.stringValue.split(",").map{it.trim()}
+            val nameKeys = if (names is PyStringLiteralExpression)
+                names.stringValue.split(",").map{it.trim()}
+            else
+                names.children.map{it.text.removeSurrounding("\"").removeSurrounding("\'")}
             val hintName: InlayPresentation = factory.seq()
             for ((idx, paramset) in valList.elements.withIndex()) {
                 if (paramset !is PyParenthesizedExpression) { continue }
