@@ -24,23 +24,35 @@ class PytestParametrizeInlayHintsCollector(
                 && element.arguments.size >= 2) {
             val names = element.arguments[0]
             val valList = element.arguments[1]
-            if (valList !is PyListLiteralExpression
-                    || (names !is PyStringLiteralExpression && names !is PyListLiteralExpression)) { return true }
 
-            val nameKeys = if (names is PyStringLiteralExpression)
-                names.stringValue.split(",").map{it.trim()}
-            else
-                names.children.map{it.text.removeSurrounding("\"").removeSurrounding("\'")}
+            if (valList !is PyListLiteralExpression) { return true }
+            val nameKeys = when (names) {
+                is PyStringLiteralExpression
+                    -> names.stringValue.split(",").map{it.trim()}
+                is PyListLiteralExpression
+                    -> names.children.map{it.text.removeSurrounding("\"").removeSurrounding("\'")}
+                is PyParenthesizedExpression
+                    -> names.children.joinToString{it.text}.split(",")
+                        .map{it.trim().removeSurrounding("\"").removeSurrounding("\'")}
+                else -> null
+            } ?: return true
+            val ids = element.arguments.filter { it -> it.name.equals("ids") }.first()
+                .children.joinToString{it.children.joinToString { it.text }}
+                .split(",").map{
+                    it.trim().removeSurrounding("\"").removeSurrounding("\'")
+                }.filter{it -> it.isNotEmpty() }
+
             val hintName: InlayPresentation = factory.seq()
             for ((idx, paramset) in valList.elements.withIndex()) {
                 if (paramset !is PyParenthesizedExpression) { continue }
 
                 // Sequence number of parameter set
                 if(settings.showParametrizeOrderHints) {
+                    val idxHint = if (idx < ids.size) ids[idx] else idx
                     sink.addInlineElement(
                             paramset.textOffset,
                             false,
-                            factory.roundWithBackground(factory.seq(factory.smallText("${idx}:"), hintName)),
+                            factory.roundWithBackground(factory.seq(factory.smallText("${idxHint}:"), hintName)),
                             false
                     )
                 }
