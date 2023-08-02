@@ -36,11 +36,15 @@ class PytestParametrizeInlayHintsCollector(
                         .map{it.trim().removeSurrounding("\"").removeSurrounding("\'")}
                 else -> null
             } ?: return true
-            val ids = element.arguments.filter { it -> it.name.equals("ids") }.first()
-                .children.joinToString{it.children.joinToString { it.text }}
-                .split(",").map{
-                    it.trim().removeSurrounding("\"").removeSurrounding("\'")
-                }.filter{it -> it.isNotEmpty() }
+            val idsArguments = element.arguments.filter { it.name.equals("ids") }
+            val ids = if (idsArguments.isEmpty())
+                    listOf<String>()
+                else
+                    idsArguments.first()
+                    .children.joinToString{it.children.joinToString { it.text }}
+                    .split(",").map{
+                        it.trim().removeSurrounding("\"").removeSurrounding("\'")
+                    }.filter{ it.isNotEmpty() }
 
             val hintName: InlayPresentation = factory.seq()
             for ((idx, paramset) in valList.elements.withIndex()) {
