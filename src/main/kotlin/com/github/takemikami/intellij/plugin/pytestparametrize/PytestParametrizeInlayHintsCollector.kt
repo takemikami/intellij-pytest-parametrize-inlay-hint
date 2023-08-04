@@ -6,6 +6,7 @@ import com.intellij.codeInsight.hints.presentation.InlayPresentation
 import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiElement
 import com.jetbrains.python.psi.*
+import com.jetbrains.python.psi.impl.PyKeywordArgumentImpl
 
 @Suppress("UnstableApiUsage")
 class PytestParametrizeInlayHintsCollector(
@@ -48,11 +49,21 @@ class PytestParametrizeInlayHintsCollector(
 
             val hintName: InlayPresentation = factory.seq()
             for ((idx, paramset) in valList.elements.withIndex()) {
-                if (paramset !is PyParenthesizedExpression) { continue }
+                if (paramset !is PyParenthesizedExpression
+                    && !(paramset is PyCallExpression && "pytest.param" == paramset.firstChild.text) ) { continue }
 
                 // Sequence number of parameter set
                 if(settings.showParametrizeOrderHints) {
-                    val idxHint = if (idx < ids.size) ids[idx] else idx
+                    val idxHintOfPytestParam =
+                        if (paramset is PyCallExpression && "pytest.param" == paramset.firstChild.text) {
+                            val texts = paramset.lastChild.children
+                                .filter { it is PyKeywordArgumentImpl && "id" == it.firstChild.text }
+                                .map { it.lastChild.text }
+                            if (texts.isNotEmpty())
+                                texts.first().removeSurrounding("\"").removeSurrounding("\'")
+                            else null
+                        } else null
+                    val idxHint = idxHintOfPytestParam ?: if (idx < ids.size) ids[idx] else idx
                     sink.addInlineElement(
                             paramset.textOffset,
                             false,
@@ -62,16 +73,22 @@ class PytestParametrizeInlayHintsCollector(
                 }
 
                 if (!settings.showParametrizeNameHints) { continue }
-                val paramsetTuple = paramset.children.first()
+                val paramsetTuple = when (paramset) {
+                    is PyParenthesizedExpression
+                    -> paramset.children.first()
+                    is PyCallExpression
+                    -> paramset.children.last()
+                    else -> null
+                } ?: return true
                 for ((pidx, param) in paramsetTuple.children.withIndex()) {
                     if (pidx >= nameKeys.size || param !is PyExpression) { break }
 
                     // parameter name
                     sink.addInlineElement(
-                            param.textOffset,
-                            false,
-                            factory.roundWithBackground(factory.seq(factory.smallText("${nameKeys[pidx]}:"), hintName)),
-                            false
+                        param.textOffset,
+                        false,
+                        factory.roundWithBackground(factory.seq(factory.smallText("${nameKeys[pidx]}:"), hintName)),
+                        false
                     )
                 }
             }
