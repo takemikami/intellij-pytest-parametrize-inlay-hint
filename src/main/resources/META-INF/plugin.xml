@@ -31,4 +31,10 @@
     <extensions defaultExtensionNs="com.intellij">
         <codeInsight.inlayProvider language="Python" implementationClass="com.github.takemikami.intellij.plugin.pytestparametrize.PytestParametrizeInlayHintsProvider"/>
     </extensions>
+
+    <actions>
+        <action id="go_to_parameter" class="com.github.takemikami.intellij.plugin.pytestparametrize.GoToParametrizeArgsAction" text="Pytest Parametrize Args">
+            <add-to-group group-id="EditorPopupMenu.GoTo" anchor="last" />
+        </action>
+    </actions>
 </idea-plugin>
