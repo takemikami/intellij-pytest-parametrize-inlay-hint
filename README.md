@@ -1,7 +1,7 @@
 Pytest Parametrize Inlay Hint
 ---
 
-Pytest Parametrize Inlay Hint is plugin for PyCharm and IntelliJ IDEA.   
+Pytest Parametrize Inlay Hint is plugin for PyCharm and IntelliJ IDEA.  
 
 ## Description
 
