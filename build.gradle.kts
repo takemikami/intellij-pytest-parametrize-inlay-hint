@@ -17,6 +17,7 @@ repositories {
 }
 dependencies {
     testImplementation(libs.junit)
+    testImplementation("org.opentest4j:opentest4j:1.3.0")
     intellijPlatform {
         create(providers.gradleProperty("platformType"), providers.gradleProperty("platformVersion"))
         bundledPlugins(providers.gradleProperty("platformBundledPlugins").map { it.split(',') })
