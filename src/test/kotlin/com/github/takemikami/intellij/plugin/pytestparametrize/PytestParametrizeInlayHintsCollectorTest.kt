@@ -3,9 +3,9 @@ package com.github.takemikami.intellij.plugin.pytestparametrize
 import com.intellij.testFramework.utils.inlays.InlayHintsProviderTestCase
 
 class PytestParametrizeInlayHintsCollectorTest<PytestParametrizeInlayHintsProvider> : InlayHintsProviderTestCase() {
-
     fun testSimple() {
-        val text = """
+        val text =
+            """
             import pytest
             @pytest.mark.parametrize(
               "x, y",
@@ -16,12 +16,13 @@ class PytestParametrizeInlayHintsCollectorTest<PytestParametrizeInlayHintsProvid
             )
             def test_foo(x, y):
               pass
-        """.trimIndent()
+            """.trimIndent()
         testAnnotations(text)
     }
 
     fun testListLiteral() {
-        val text = """
+        val text =
+            """
             import pytest
             @pytest.mark.parametrize(
               ["x", "y"],
@@ -32,12 +33,13 @@ class PytestParametrizeInlayHintsCollectorTest<PytestParametrizeInlayHintsProvid
             )
             def test_foo(x, y):
               pass
-        """.trimIndent()
+            """.trimIndent()
         testAnnotations(text)
     }
 
     fun testParenthesized() {
-        val text = """
+        val text =
+            """
             import pytest
             @pytest.mark.parametrize(
               ("x", "y"),
@@ -48,12 +50,13 @@ class PytestParametrizeInlayHintsCollectorTest<PytestParametrizeInlayHintsProvid
             )
             def test_foo(x, y):
               pass
-        """.trimIndent()
+            """.trimIndent()
         testAnnotations(text)
     }
 
     fun testIds() {
-        val text = """
+        val text =
+            """
             import pytest
             @pytest.mark.parametrize(
               "x, y",
@@ -65,12 +68,13 @@ class PytestParametrizeInlayHintsCollectorTest<PytestParametrizeInlayHintsProvid
             )
             def test_foo(x, y):
               pass
-        """.trimIndent()
+            """.trimIndent()
         testAnnotations(text)
     }
 
     fun testPytestParam() {
-        val text = """
+        val text =
+            """
             import pytest
             @pytest.mark.parametrize(
               "x, y",
@@ -81,7 +85,7 @@ class PytestParametrizeInlayHintsCollectorTest<PytestParametrizeInlayHintsProvid
             )
             def test_foo(x, y):
               pass
-        """.trimIndent()
+            """.trimIndent()
         testAnnotations(text)
     }
 
@@ -90,7 +94,7 @@ class PytestParametrizeInlayHintsCollectorTest<PytestParametrizeInlayHintsProvid
         doTestProvider(
             "test_foo.py",
             text,
-            PytestParametrizeInlayHintsProvider()
+            PytestParametrizeInlayHintsProvider(),
         )
     }
 }
